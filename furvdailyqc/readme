@@ -1,0 +1,3 @@
+R package to QC daily maximum (Tmax), minimum temperatures (Tmin) and precipitation. 
+A set of seven functions: to detect big errors, rounding problems, duplicate dates, climatic outliers, 
+too large interdiurnal differences, internal consistency between Tmax and Tmin and tolerance test
