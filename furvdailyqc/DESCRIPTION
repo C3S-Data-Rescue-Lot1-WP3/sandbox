@@ -1,0 +1,29 @@
+Package: furvdailyqc
+Type: Package
+Title: Quality Control Functions for Tmax, Tmin and Precipitation Daily Data
+Version: 0.1.0
+Author:Alba Gilabert
+Maintainer: Alba Gilabert <alba.gilabert@urv.cat>
+Description: Package to QC daily maximum (Tmax) and minimum temperatures (Tmin) 
+    and daily precipitation (RR).
+    A set of seven functions: to detect big errors (for Tmax, Tmin and RR data), 
+    to detect rounding problems (for Tmax, Tmin and RR data), to detect duplicate
+    dates (for Tmax, Tmin and RR data), to detect climatic outliers (for Tmax, Tmin
+    and RR data), to detect too large interdiurnal differences (Tmax and Tmin), to
+    detect internal consistency between Tmax and Tmin and a tolerance test (Tmax 
+    and Tmin).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Suggests: 
+    testthat,
+    knitr,
+Imports: 
+    grDevices,
+    graphics,
+    stats,
+    utils
+Depends:
+    R (>= 2.10)
+
