@@ -25,11 +25,31 @@
 #' @export
 
 out_of_range <- function() {
-  data <- read.table(file.choose(),
-    col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
-    na.strings = "-99.9")
-  out <- subset(data, (data$tmax > 50 | data$tmax < -50 | data$tmin > 50 |
-      data$tmin < -50 | data$rr > 200 | data$rr < 0))
+  if (exists('daily_data')) {
+    daily_data <- daily_data
+  } else {
+    daily_data_file <- file.choose()
+    daily_data <- read.table(daily_data_file, 
+      col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
+      na.strings = "-99.9")
+    assign("daily_data", daily_data, envir=globalenv())
+  }
+  write("          ",file="")
+  tmax_upper_thres <- readline("Tmax upper threshold: ")
+  tmax_upper_thres <- as.numeric(tmax_upper_thres)
+  tmax_lower_thres <- readline("Tmax lower threshold: ")
+  tmax_lower_thres <- as.numeric(tmax_lower_thres)
+  tmin_upper_thres <- readline("Tmin upper threshold: ")
+  tmin_upper_thres <- as.numeric(tmin_upper_thres)
+  tmin_lower_thres <- readline("Tmin lower threshold: ")
+  tmin_lower_thres <- as.numeric(tmin_lower_thres)
+  rr_upper_thres <- readline("RR upper threshold: ")
+  rr_upper_thres <- as.numeric(rr_upper_thres)
+  
+  out <- subset(daily_data, (daily_data$tmax > tmax_upper_thres | 
+      daily_data$tmax < tmax_lower_thres | daily_data$tmin > tmin_upper_thres | 
+      daily_data$tmin < tmin_lower_thres | daily_data$rr > rr_upper_thres))
+  
   file_name <- paste("out_of_range.txt", sep = "")
   write.table(out, file = file_name, quote = FALSE, row.names = FALSE,
     col.names = FALSE)
@@ -37,3 +57,4 @@ out_of_range <- function() {
   print("Big errors test finished")
   print("Check < out_of_range.txt >")
 }
+
