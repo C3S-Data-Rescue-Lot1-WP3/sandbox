@@ -20,11 +20,17 @@
 #' @export
 
 duplicate_dates <- function() {
-    data <- read.table(file.choose(),
+  if (exists('daily_data')) {
+    daily_data <- daily_data
+  } else {
+    daily_data_file <- file.choose()
+    daily_data <- read.table(daily_data_file, 
       col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
       na.strings = "-99.9")
+    assign("daily_data", daily_data, envir=globalenv())
+  }
     file_name <- paste("duplicate_dates.txt", sep = "")
-    is_dupli <- cbind(data$year, data$month, data$day)
+    is_dupli <- cbind(daily_data$year, daily_data$month, daily_data$day)
     write.table(subset(is_dupli, duplicated(is_dupli) == TRUE),
       file = file_name, quote = FALSE, row.names = FALSE, col.names = FALSE)
     rm(list = ls())
