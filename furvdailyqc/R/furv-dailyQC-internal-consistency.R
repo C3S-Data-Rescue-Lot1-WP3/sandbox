@@ -21,14 +21,20 @@
 #' @export
 
 internal_consistency <- function() {
-    data <- read.table(file.choose(),
+  if (exists('daily_data')) {
+    daily_data <- daily_data
+  } else {
+    daily_data_file <- file.choose()
+    daily_data <- read.table(daily_data_file, 
       col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
       na.strings = "-99.9")
-    no_natmax <- length(subset(data$tmax, !is.na(data$tmax)))
-    no_natmin <- length(subset(data$tmin, !is.na(data$tmin)))
+    assign("daily_data", daily_data, envir=globalenv())
+  }
+    no_natmax <- length(subset(daily_data$tmax, !is.na(daily_data$tmax)))
+    no_natmin <- length(subset(daily_data$tmin, !is.na(daily_data$tmin)))
     if (no_natmax > 0 & no_natmin > 0) {
         filena <- paste("tmaxmin.txt", sep = "")
-        write.table(subset(data, (data$tmax - data$tmin) <= 0),
+        write.table(subset(daily_data, (daily_data$tmax - daily_data$tmin) <= 0),
           file = filena, quote = FALSE, row.names = FALSE, col.names = FALSE)
         rm(list = ls())
         print("Internal consistency test finished")
