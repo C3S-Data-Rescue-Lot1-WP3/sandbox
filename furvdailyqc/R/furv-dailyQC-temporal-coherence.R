@@ -26,20 +26,25 @@
 #' @export
 
 temporal_coherence <- function() {
-    station <- file.choose()
-    data <- read.table(station,
+  if (exists('daily_data')) {
+    daily_data <- daily_data
+  } else {
+    daily_data_file <- file.choose()
+    daily_data <- read.table(daily_data_file, 
       col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
       na.strings = "-99.9")
-    no_natmax <- length(subset(data$tmax, !is.na(data$tmax)))
+    assign("daily_data", daily_data, envir=globalenv())
+  }
+    no_natmax <- length(subset(daily_data$tmax, !is.na(daily_data$tmax)))
     if (no_natmax > 0) {
-        dif_tmax <- abs(round(diff(data$tmax, lag = 1, differences = 1),
+        dif_tmax <- abs(round(diff(daily_data$tmax, lag = 1, differences = 1),
           digits = 1))
         id_dif <- data.frame(c.ndx = cumsum(rle(dif_tmax)$lengths),
           c.type = rle(dif_tmax)$values)
         id_dif <- na.omit(id_dif)
         names(id_dif) <- c("id", "value")
-        tmax_table <- data.frame(id = row(data), year = data$year,
-          month = data$month, day = data$day, day = data$tmax)
+        tmax_table <- data.frame(id = row(daily_data), year = daily_data$year,
+          month = daily_data$month, day = daily_data$day, day = daily_data$tmax)
         tmax_table <- tmax_table[, 6:10]
         names(tmax_table) <- c("id", "year", "month", "day", "tmax")
         jumps <- merge(tmax_table, id_dif, by = "id", all.id_dif = F,
@@ -55,20 +60,25 @@ temporal_coherence <- function() {
         print("Check < jumps_tmax.txt >")
     }
     # now we go with Tmin
-    station <- file.choose()
-    data <- read.table(station,
-      col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
-      na.strings = "-99.9")
-    no_natmin <- length(subset(data$tmin, !is.na(data$tmin)))
+    if (exists('daily_data')) {
+      daily_data <- daily_data
+    } else {
+      daily_data_file <- file.choose()
+      daily_data <- read.table(daily_data_file, 
+        col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
+        na.strings = "-99.9")
+      assign("daily_data", daily_data, envir=globalenv())
+    }
+    no_natmin <- length(subset(daily_data$tmin, !is.na(daily_data$tmin)))
     if (no_natmin > 0) {
-        dif_tmin <- abs(round(diff(data$tmin, lag = 1, differences = 1),
+        dif_tmin <- abs(round(diff(daily_data$tmin, lag = 1, differences = 1),
           digits = 1))
         id_dif <- data.frame(c.ndx = cumsum(rle(dif_tmin)$lengths),
           c.type = rle(dif_tmin)$values)
         id_dif <- na.omit(id_dif)
         names(id_dif) <- c("id", "value")
-        tmin_table <- data.frame(id = row(data), year = data$year,
-          month = data$month, day = data$day, day = data$tmin)
+        tmin_table <- data.frame(id = row(daily_data), year = daily_data$year,
+          month = daily_data$month, day = daily_data$day, day = daily_data$tmin)
         tmin_table <- tmin_table[, 6:10]
         names(tmin_table) <- c("id", "year", "month", "day", "tmin")
         jumps <- merge(tmin_table, id_dif, by = "id", all.id_dif = F,
