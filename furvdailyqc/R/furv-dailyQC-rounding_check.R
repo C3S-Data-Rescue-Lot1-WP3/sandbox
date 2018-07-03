@@ -28,24 +28,30 @@
 rounding_check <- function() {
     file_name <- paste("rounding_evolution.pdf", sep = "")
     pdf(file = file_name)
-    data <- read.table(file.choose(),
-      col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
-      na.strings = "-99.9")
-    no_natmax <- length(subset(data$tmax, !is.na(data$tmax)))
-    no_natmin <- length(subset(data$tmin, !is.na(data$tmin)))
-    no_narr <- length(subset(data$rr, !is.na(data$rr)))
+    if (exists('daily_data')) {
+      daily_data <- daily_data
+    } else {
+      daily_data_file <- file.choose()
+      daily_data <- read.table(daily_data_file, 
+        col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
+        na.strings = "-99.9")
+      assign("daily_data", daily_data, envir=globalenv())
+    }
+    no_natmax <- length(subset(daily_data$tmax, !is.na(daily_data$tmax)))
+    no_natmin <- length(subset(daily_data$tmin, !is.na(daily_data$tmin)))
+    no_narr <- length(subset(daily_data$rr, !is.na(daily_data$rr)))
     par(mfrow = c(1, 3))
-    rr_dif0 <- subset(data$rr, data$rr > 0)
+    rr_dif0 <- subset(daily_data$rr, daily_data$rr > 0)
     if (no_narr > 0) {
         hist(rr_dif0 %% 1, col = "blue", main = "RR > 0 rounding",
           breaks = c(seq(-0.1, 0.9, 0.1)), xlab = "")
     }
     if (no_natmax > 0) {
-        hist(data$tmax %% 1, col = "red", main = "Tmax rounding",
+        hist(daily_data$tmax %% 1, col = "red", main = "Tmax rounding",
           breaks = c(seq(-0.1, 0.9, 0.1)), xlab = "")
     }
     if (no_natmin > 0) {
-        hist(data$tmin %% 1, col = "cyan", main = "Tmin rounding",
+        hist(daily_data$tmin %% 1, col = "cyan", main = "Tmin rounding",
           breaks = c(seq(-0.1, 0.9, 0.1)), xlab = "")
     }
     dev.off()
