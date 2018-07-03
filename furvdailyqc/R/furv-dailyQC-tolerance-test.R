@@ -24,20 +24,25 @@
 #' @export
 
 tolerance_test <- function() {
-    file <- file.choose()
-    data <- read.table(file,
+  if (exists('daily_data')) {
+    daily_data <- daily_data
+  } else {
+    daily_data_file <- file.choose()
+    daily_data <- read.table(daily_data_file, 
       col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
       na.strings = "-99.9")
-    no_natmax <- length(subset(data$tmax, !is.na(data$tmax)))
+    assign("daily_data", daily_data, envir=globalenv())
+  }
+    no_natmax <- length(subset(daily_data$tmax, !is.na(daily_data$tmax)))
     if (no_natmax > 0) {
         file_name <- paste("flatline_tmax.txt", sep = "")
-        tmax <- data$tmax
+        tmax <- daily_data$tmax
         vector_count <- rle(tmax)$lengths
         id_value <- cumsum(vector_count)
         value_flat <- which(vector_count > 3)
         number_flat <- subset(vector_count, vector_count > 3)
         flat <- id_value[value_flat]
-        tmax_flatline <- data[flat, c(1:3, 5)]
+        tmax_flatline <- daily_data[flat, c(1:3, 5)]
         tmax_flatline <- cbind(tmax_flatline, number_flat)
         write.table(tmax_flatline, file = file_name, quote = FALSE,
           row.names = FALSE, col.names = TRUE)
@@ -45,20 +50,25 @@ tolerance_test <- function() {
         print("Tmax tolerance test finished")
         print("Check < flatlines_tmax.txt >")
     }
-    file <- file.choose()
-    data <- read.table(file,
-      col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
-      na.strings = "-99.9")
-    no_natmin <- length(subset(data$tmin, !is.na(data$tmin)))
+    if (exists('daily_data')) {
+      daily_data <- daily_data
+    } else {
+      daily_data_file <- file.choose()
+      daily_data <- read.table(daily_data_file, 
+        col.names = c("year", "month", "day", "rr", "tmax", "tmin"),
+        na.strings = "-99.9")
+      assign("daily_data", daily_data, envir=globalenv())
+    }
+    no_natmin <- length(subset(daily_data$tmin, !is.na(daily_data$tmin)))
     if (no_natmin > 0) {
         file_name <- paste("flatline_tmin.txt", sep = "")
-        tmin <- data$tmin
+        tmin <- daily_data$tmin
         vector_count <- rle(tmin)$lengths
         id_value <- cumsum(vector_count)
         value_flat <- which(vector_count > 3)
         number_flat <- subset(vector_count, vector_count > 3)
         flat <- id_value[value_flat]
-        tmin_flatline <- data[flat, c(1:3, 6)]
+        tmin_flatline <- daily_data[flat, c(1:3, 6)]
         tmin_flatline <- cbind(tmin_flatline, number_flat)
         write.table(tmin_flatline, file = file_name, quote = FALSE,
           row.names = FALSE, col.names = TRUE)
